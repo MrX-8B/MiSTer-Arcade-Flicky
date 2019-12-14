@@ -354,6 +354,21 @@ set_global_assignment -name FLOW_ENABLE_RTL_VIEWER OFF
 
 
 
+set_global_assignment -name VERILOG_FILE src/roms/FlickyRoms.v
+set_global_assignment -name VHDL_FILE src/T80/T80s.vhd
+set_global_assignment -name VHDL_FILE src/T80/T80_Reg.vhd
+set_global_assignment -name VHDL_FILE src/T80/T80_Pack.vhd
+set_global_assignment -name VHDL_FILE src/T80/T80_MCode.vhd
+set_global_assignment -name VHDL_FILE src/T80/T80_ALU.vhd
+set_global_assignment -name VHDL_FILE src/T80/T80.vhd
+set_global_assignment -name VERILOG_FILE src/z80ip.v
+set_global_assignment -name VERILOG_FILE src/SN76496.v
+set_global_assignment -name VERILOG_FILE src/parts.v
+set_global_assignment -name VERILOG_FILE src/FPGA_FLICKY.v
+set_global_assignment -name VERILOG_FILE src/FlickyVIDEO.v
+set_global_assignment -name VERILOG_FILE src/FlickySPRITE.v
+set_global_assignment -name VERILOG_FILE src/FlickySND.v
+set_global_assignment -name VERILOG_FILE src/FlickyMAIN.v
 set_global_assignment -name SYSTEMVERILOG_FILE "Arcade-Flicky.sv"
 set_global_assignment -name CDF_FILE jtag.cdf
 set_global_assignment -name QIP_FILE sys/sys.qip

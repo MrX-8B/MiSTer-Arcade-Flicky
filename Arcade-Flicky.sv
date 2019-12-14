@@ -264,7 +264,6 @@ assign AUDIO_S = 0; // unsigned PCM
 
 wire iRST = RESET | status[0] | buttons[1] | ioctl_download;
 
-`ifdef NONE
 FPGA_FLICKY GameCore ( 
 	.clk48M(clk_48M),.reset(iRST),
 	.HID({21{1'b1}}),
@@ -273,15 +272,6 @@ FPGA_FLICKY GameCore (
 
 	//,.ROMCL(clk_sys),.ROMAD(ioctl_addr),.ROMDT(ioctl_dout),.ROMEN(ioctl_wr)
 );
-`else
-
-reg [2:0] clkdiv;
-always @(posedge clk_48M) clkdiv <= clkdiv+1;
-
-assign POUT = ((HPOS==0)|(HPOS==255)|(VPOS==0)|(VPOS==223)) ? 8'hFF : 8'h0;
-assign PCLK = clkdiv[2];
-
-`endif
 
 endmodule
 
