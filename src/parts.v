@@ -191,7 +191,7 @@ module DPRAM1024_1
 (
 	input			clk0,
 	input	[9:0]	adr0,
-	output reg	rdat0,
+	output 		rdat0,
 	input			wdat0,
 	input			we0,
 	
@@ -201,19 +201,14 @@ module DPRAM1024_1
 	input			we1
 );
 
-/*
-reg core [0:1023];
-
-always @( posedge clk0 ) begin
-	if (we0) core[adr0] <= wdat0;
-	rdat0 <= core[adr0];
-end
-
-always @( posedge clk1 ) begin
-	if (we1) core[adr1] <= wdat1;
-end
-*/
-
+DPRAM1024_1B core (
+	adr0,adr1,
+	clk0,clk1,
+	wdat0,wdat1,
+	we0,we1,
+	rdat0
+);
+	
 endmodule
 
 
@@ -224,7 +219,7 @@ module DPRAM64_1
 (
 	input			clk0,
 	input	[5:0]	adr0,
-	output reg	rdat0,
+	output 		rdat0,
 	input			wdat0,
 	input			we0,
 	
@@ -234,18 +229,13 @@ module DPRAM64_1
 	input			we1
 );
 
-/*
-reg [3:0] core [0:63];
-
-always @( posedge clk0 ) begin
-	if (we0) core[adr0] <= wdat0;
-	rdat0 <= core[adr0];
-end
-
-always @( posedge clk1 ) begin
-	if (we1) core[adr1] <= wdat1;
-end
-*/
+DPRAM1024_1B core (
+	adr0,adr1,
+	clk0,clk1,
+	wdat0,wdat1,
+	we0,we1,
+	rdat0
+);
 
 endmodule
 
@@ -253,7 +243,6 @@ endmodule
 //----------------------------------
 //  ScanLine Buffer
 //----------------------------------
-// TODO: Impl.
 module LineBuf
 (
 	input				clkr,
@@ -267,8 +256,13 @@ module LineBuf
 	output [10:0]	rdat1
 );
 
-assign rdat  = 0;
-assign rdat1 = 0;
+DPRAM1024_11B core (
+	radr,wadr,
+	clkr,clkw,
+	16'h0,{5'h0,wdat},
+	1'b0,we,
+	rdat,rdat1
+);
 
 endmodule
 
