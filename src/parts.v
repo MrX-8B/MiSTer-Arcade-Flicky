@@ -184,61 +184,6 @@ assign dat1 = { do11, do10 };
 
 endmodule
 
-//----------------------------------
-//  DPRAM1024_1
-//----------------------------------
-module DPRAM1024_1
-(
-	input			clk0,
-	input	[9:0]	adr0,
-	output 		rdat0,
-	input			wdat0,
-	input			we0,
-	
-	input			clk1,
-	input	[9:0]	adr1,
-	input			wdat1,
-	input			we1
-);
-
-DPRAM1024_1B core (
-	adr0,adr1,
-	clk0,clk1,
-	wdat0,wdat1,
-	we0,we1,
-	rdat0
-);
-	
-endmodule
-
-
-//----------------------------------
-//  DPRAM64_1
-//----------------------------------
-module DPRAM64_1
-(
-	input			clk0,
-	input	[5:0]	adr0,
-	output 		rdat0,
-	input			wdat0,
-	input			we0,
-	
-	input			clk1,
-	input	[5:0]	adr1,
-	input			wdat1,
-	input			we1
-);
-
-DPRAM1024_1B core (
-	adr0,adr1,
-	clk0,clk1,
-	wdat0,wdat1,
-	we0,we1,
-	rdat0
-);
-
-endmodule
-
 
 //----------------------------------
 //  ScanLine Buffer

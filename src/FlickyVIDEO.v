@@ -520,16 +520,18 @@ module COLLRAM_M
 	input				coll
 );
 
-wire coll_rd;
-DPRAM64_1 collram(
-	cpu_cl, cpu_ad, coll_rd, 1'b0, cpu_wr_coll,
-	VCLKx4, coll_ad, 1'b1, coll
-);
+reg [63:0] core;
+reg coll_rd, coll_sm;
 
-reg coll_sm;
+always @(posedge cpu_cl) coll_rd <= core[cpu_ad];
+
 always @(posedge VCLKx4) begin
-	if (cpu_cl & cpu_wr_collclr) coll_sm <= 1'b0;
+	if (cpu_cl) begin
+		if (cpu_wr_coll) core[cpu_ad] <= 1'b0;
+		if (cpu_wr_collclr) coll_sm <= 1'b0;
+	end
 	else coll_sm <= coll;
+	if (coll) core[coll_ad] <= 1'b1;
 end
 
 assign cpu_rd_coll = { coll_sm, 6'b111111, coll_rd };
@@ -549,16 +551,18 @@ module COLLRAM_S
 	input				coll
 );
 
-wire coll_rd;
-DPRAM1024_1 collram(
-	cpu_cl, cpu_ad, coll_rd, 1'b0, cpu_wr_coll,
-	VCLKx4, coll_ad, 1'b1, coll
-);
+reg [1023:0] core;
+reg coll_rd, coll_sm;
 
-reg coll_sm;
+always @(posedge cpu_cl) coll_rd <= core[cpu_ad];
+
 always @(posedge VCLKx4) begin
-	if (cpu_cl & cpu_wr_collclr) coll_sm <= 1'b0;
+	if (cpu_cl) begin
+		if (cpu_wr_coll) core[cpu_ad] <= 1'b0;
+		if (cpu_wr_collclr) coll_sm <= 1'b0;
+	end
 	else coll_sm <= coll;
+	if (coll) core[coll_ad] <= 1'b1;
 end
 
 assign cpu_rd_coll = { coll_sm, 6'b111111, coll_rd };
