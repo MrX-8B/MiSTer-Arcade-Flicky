@@ -20,7 +20,12 @@ module FlickyVIDEO
 	input				cpu_wr,
 	input		[7:0]	cpu_dw,
 	output			cpu_rd,
-	output	[7:0]	cpu_dr
+	output	[7:0]	cpu_dr,
+	
+	input				ROMCL,		// Downloaded ROM image
+	input   [24:0]	ROMAD,
+	input    [7:0]	ROMDT,
+	input				ROMEN
 );
 
 // CPU Interface
@@ -77,7 +82,7 @@ VIDHVGEN hv(
 wire [10:0] SPRPX;
 wire [14:0] sprchad;
 wire  [7:0] sprchdt;
-FlickySprChr sprchr(VCLKx8,sprchad,sprchdt);
+DLROM #(15,8) sprchr(VCLKx8,sprchad,sprchdt, ROMCL,ROMAD,ROMDT,ROMEN & (ROMAD[16:15]==2'b0_1));	// $08000-$0FFFF
 FlickySPRITE sprite(
 	.VCLKx4(VCLKx4),.VCLK(VCLK),
 	.PH(HPOS),.PV(VPOS),
@@ -93,14 +98,14 @@ wire [10:0] BG0PX, BG1PX;
 wire [13:0]	tile0ad, tile1ad, tilead;
 wire [23:0] tile0dt, tile1dt, tiledt;
 TileChrMUX tilemux(VCLKx8, tile0ad, tile0dt, tile1ad, tile1dt, tilead, tiledt);
-FlickyTileChr tilechr(VCLKx8, tilead, tiledt);
+FlickyTileChr tilechr(VCLKx8, tilead, tiledt, ROMCL,ROMAD,ROMDT,ROMEN );
 BGGEN bg0(VCLK,BG0HP,BG0VP,vram0ad,vram0dt,tile0ad,tile0dt,BG0PX);
 BGGEN bg1(VCLK,BG1HP,BG1VP,vram1ad,vram1dt,tile1ad,tile1dt,BG1PX);
 
 
 // Color Mixer & RGB Output
 wire [7:0] cltidx,cltval;
-FlickyCLUT clut(VCLKx2, cltidx, cltval);
+DLROM #(8,8) clut(VCLKx2, cltidx, cltval, ROMCL,ROMAD,ROMDT,ROMEN & (ROMAD[16:8]==9'b1_1110_0000) ); // $1E000-$1E0FF
 COLMIX cmix(
 	VCLK,
 	BG0PX, BG1PX, SPRPX,
@@ -294,19 +299,24 @@ module FlickyTileChr
 (
 	input				clk,
 	input  [13:0]	adr,
-	output [23:0]	dat
+	output [23:0]	dat,
+	
+	input				ROMCL,		// Downloaded ROM image
+	input   [24:0]	ROMAD,
+	input	  [7:0]	ROMDT,
+	input				ROMEN
 );
 
 wire [23:0]	t0dt,t1dt;
 assign dat = adr[13] ? t1dt : t0dt;
 
-FlickyTile0_0 t00( clk, adr[12:0], t0dt[7:0]   );
-FlickyTile0_1 t01( clk, adr[12:0], t0dt[15:8]  );
-FlickyTile0_2 t02( clk, adr[12:0], t0dt[23:16] );
+DLROM #(13,8) t00( clk, adr[12:0], t0dt[7:0]  ,ROMCL,ROMAD,ROMDT,ROMEN & (ROMAD[16:13]==4'b1_000)); // $10000-$11FFF
+DLROM #(13,8) t01( clk, adr[12:0], t0dt[15:8] ,ROMCL,ROMAD,ROMDT,ROMEN & (ROMAD[16:13]==4'b1_001)); // $12000-$13FFF
+DLROM #(13,8) t02( clk, adr[12:0], t0dt[23:16],ROMCL,ROMAD,ROMDT,ROMEN & (ROMAD[16:13]==4'b1_010)); // $14000-$15FFF
 
-FlickyTile1_0 t10( clk, adr[12:0], t1dt[7:0]   );
-FlickyTile1_1 t11( clk, adr[12:0], t1dt[15:8]  );
-FlickyTile1_2 t12( clk, adr[12:0], t1dt[23:16] );
+DLROM #(13,8) t10( clk, adr[12:0], t1dt[7:0]  ,ROMCL,ROMAD,ROMDT,ROMEN & (ROMAD[16:13]==4'b1_011)); // $16000-$17FFF
+DLROM #(13,8) t11( clk, adr[12:0], t1dt[15:8] ,ROMCL,ROMAD,ROMDT,ROMEN & (ROMAD[16:13]==4'b1_100)); // $18000-$19FFF
+DLROM #(13,8) t12( clk, adr[12:0], t1dt[23:16],ROMCL,ROMAD,ROMDT,ROMEN & (ROMAD[16:13]==4'b1_101)); // $1A000-$1BFFF
 
 endmodule
 

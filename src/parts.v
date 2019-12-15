@@ -1,5 +1,25 @@
 // Copyright (c) 2017,19 MiSTer-X
 
+module DLROM #(parameter AW,parameter DW)
+(
+	input							CL0,
+	input [(AW-1):0]			AD0,
+	output reg [(DW-1):0]	DO0,
+
+	input							CL1,
+	input [(AW-1):0]			AD1,
+	input	[(DW-1):0]			DI1,
+	input							WE1
+);
+
+reg [(DW-1):0] core[0:((2**AW)-1)];
+
+always @(posedge CL0) DO0 <= core[AD0];
+always @(posedge CL1) if (WE1) core[AD1] <= DI1;
+
+endmodule
+
+
 //----------------------------------
 //  2K SRAM
 //----------------------------------

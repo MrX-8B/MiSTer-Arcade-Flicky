@@ -23,10 +23,15 @@ module FlickyMAIN
 	output  [7:0]	CPUDO,
 	output		  	CPUWR,
 	
-	output			SNDRQ
+	output			SNDRQ,
+	
+	input				ROMCL,		// Downloaded ROM image
+	input   [24:0]	ROMAD,
+	input	  [7:0]	ROMDT,
+	input				ROMEN
 );
 
-wire			ROMCL   = CLK48M;
+wire			AXSCL   = CLK48M;
 wire			CPUCL   = CLK3M;
 assign 		CPUCLn  = ~CPUCL;
 
@@ -76,7 +81,7 @@ wire [7:0]	cpu_rd_portB = DSW1;
 
 wire [7:0]	cpu_rd_mrom;
 wire			cpu_cs_mrom = (CPUAD[15] == 1'b0);
-PRGROM prom(ROMCL, cpu_m1, CPUAD[14:0], cpu_rd_mrom );
+PRGROM prom(AXSCL, cpu_m1, CPUAD[14:0], cpu_rd_mrom, ROMCL,ROMAD,ROMDT,ROMEN );
 
 wire [7:0]	cpu_rd_mram;
 wire			cpu_cs_mram = (CPUAD[15:12] == 4'b1100);
@@ -114,7 +119,12 @@ module PRGROM
 
 	input					mrom_m1,
 	input     [14:0]	mrom_ad,
-	output reg [7:0]	mrom_dt
+	output reg [7:0]	mrom_dt,
+
+	input					ROMCL,		// Downloaded ROM image
+	input     [24:0]	ROMAD,
+	input	     [7:0]	ROMDT,
+	input					ROMEN
 );
 
 reg  [15:0] madr;
@@ -128,8 +138,8 @@ wire  [6:0] decidx  = { madr[12], madr[8], madr[4], madr[0], ~madr[15], decidx0 
 wire  [7:0] dectbl;
 wire  [7:0] mdec    = ( mdat & andv ) | ( dectbl ^ xorv );
 
-FlickyDECTBL decrom( clk, decidx, dectbl );
-FlickyCPU1IR mainir( clk, madr[14:0], mdat );
+DLROM #( 7,8) decrom( clk, decidx,   dectbl, ROMCL,ROMAD,ROMDT,ROMEN & (ROMAD[16: 7]==10'b1_1110_0001_0) );	// $1E100-$1E17F
+DLROM #(15,8) mainir( clk, madr[14:0], mdat, ROMCL,ROMAD,ROMDT,ROMEN & (ROMAD[16:15]==2'b0_0) );				// $00000-$07FFF
 
 reg phase = 1'b0;
 always @( negedge clk ) begin

@@ -107,6 +107,7 @@ wire        forced_scandoubler;
 
 wire        ioctl_download;
 wire        ioctl_wr;
+wire  [7:0]	ioctl_index;
 wire [24:0] ioctl_addr;
 wire  [7:0] ioctl_dout;
 
@@ -130,6 +131,7 @@ hps_io #(.STRLEN($size(CONF_STR)>>3)) hps_io
 	.ioctl_wr(ioctl_wr),
 	.ioctl_addr(ioctl_addr),
 	.ioctl_dout(ioctl_dout),
+	.ioctl_index(ioctl_index),
 
 	.joystick_0(joystk1),
 	.joystick_1(joystk2),
@@ -273,9 +275,9 @@ FPGA_FLICKY GameCore (
 	.DSW0(DSW0),.DSW1(DSW1),
 
 	.PH(HPOS),.PV(VPOS),.PCLK(PCLK),.POUT(POUT),
-	.SOUT(AOUT)
+	.SOUT(AOUT),
 
-	//,.ROMCL(clk_sys),.ROMAD(ioctl_addr),.ROMDT(ioctl_dout),.ROMEN(ioctl_wr)
+	.ROMCL(clk_sys),.ROMAD(ioctl_addr),.ROMDT(ioctl_dout),.ROMEN(ioctl_wr & (ioctl_index==0))
 );
 
 endmodule

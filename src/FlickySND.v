@@ -8,7 +8,12 @@ module FlickySND
    input   [7:0]	sndno,
    input				sndstart,
 
-   output [15:0]	sndout
+   output [15:0]	sndout,
+	
+	input				ROMCL,		// Downloaded ROM image
+	input   [24:0]	ROMAD,
+	input	  [7:0]	ROMDT,
+	input				ROMEN
 );
 
 //----------------------------------
@@ -56,7 +61,7 @@ wire  [7:0]		rom_dt;		// ROM
 wire  [7:0]		ram_do;		// RAM
 wire  [7:0]		comlatch;	// Sound Command Latch
 
-FlickyCPU2IR subir( cpuclkx2, cpu_ad[12:0], rom_dt );
+DLROM #(13,8) subir( cpuclkx2, cpu_ad[12:0], rom_dt, ROMCL,ROMAD,ROMDT,ROMEN & (ROMAD[16:13]==4'b1_110)); // $1C000-$1DFFF
 SRAM_2048 wram( cpuclkx2, cpu_ad[10:0], ram_do, cpu_wr_ram, cpu_do );
 
 dataselector3 scpudisel(

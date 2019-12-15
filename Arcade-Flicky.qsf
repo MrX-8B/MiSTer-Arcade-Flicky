@@ -355,7 +355,6 @@ set_global_assignment -name FLOW_ENABLE_RTL_VIEWER OFF
 
 
 set_global_assignment -name QIP_FILE src/DPRAM1024_1B.qip
-set_global_assignment -name VERILOG_FILE src/roms/FlickyRoms.v
 set_global_assignment -name VHDL_FILE src/T80/T80s.vhd
 set_global_assignment -name VHDL_FILE src/T80/T80_Reg.vhd
 set_global_assignment -name VHDL_FILE src/T80/T80_Pack.vhd

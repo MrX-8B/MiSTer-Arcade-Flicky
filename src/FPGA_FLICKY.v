@@ -20,7 +20,13 @@ module FPGA_FLICKY
 	output         PCLK,       // PIXEL CLOCK (to VGA encoder)
 	output  [7:0]	POUT, 	   // PIXEL OUT
 
-	output  [15:0] SOUT			// Sound Out (PCM)
+	output  [15:0] SOUT,			// Sound Out (PCM)
+
+	
+	input				ROMCL,		// Downloaded ROM image
+	input   [24:0]	ROMAD,
+	input	  [7:0]	ROMDT,
+	input				ROMEN
 );
 
 // Clocks
@@ -41,7 +47,9 @@ FlickyMAIN Main (
 	.CLK48M(clk48M),.CLK3M(clk3M),
 	.CPUCLn(CPUCLn),.CPUAD(CPUAD),.CPUDO(CPUDO),.CPUWR(CPUWR),
 	.VBLK(VBLK),.VIDCS(VIDCS),.VIDDO(VIDDO),
-	.SNDRQ(SNDRQ)
+	.SNDRQ(SNDRQ),
+	
+	.ROMCL(ROMCL),.ROMAD(ROMAD),.ROMDT(ROMDT),.ROMEN(ROMEN)
 );
 
 // Video
@@ -50,12 +58,17 @@ FlickyVIDEO Video (
 	.PH(PH),.PV(PV),.VBLK(VBLK),.RGB8(POUT),.PALDSW(1'b0),
 
 	.cpu_cl(CPUCLn),.cpu_ad(CPUAD),.cpu_wr(CPUWR),.cpu_dw(CPUDO),
-	.cpu_rd(VIDCS),.cpu_dr(VIDDO)
+	.cpu_rd(VIDCS),.cpu_dr(VIDDO),
+
+	.ROMCL(ROMCL),.ROMAD(ROMAD),.ROMDT(ROMDT),.ROMEN(ROMEN)
 );
 assign PCLK = clk6M;
 
 // Sound
-FlickySND Sound(clk8M, reset, CPUDO, SNDRQ, SOUT);
+FlickySND Sound(
+	clk8M, reset, CPUDO, SNDRQ, SOUT,
+	ROMCL, ROMAD, ROMDT, ROMEN
+);
 
 endmodule
 
