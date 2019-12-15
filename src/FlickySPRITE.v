@@ -2,22 +2,22 @@
 
 module FlickySPRITE
 (
-	input				VCLKx4,
-	input				VCLK,
+	input					VCLKx4,
+	input					VCLK,
 
-	input  [8:0]	PH,
-	input  [8:0]	PV,
+	input  	[8:0]		PH,
+	input  	[8:0]		PV,
 
-	output [9:0]	sprad,
-	input [15:0]	sprdt,
+	output 	[9:0]		sprad,
+	input   [15:0]		sprdt,
 
-	output [14:0]	sprchad,
-	input   [7:0]	sprchdt,
+	output  [14:0]		sprchad,
+	input    [7:0]		sprchdt,
 
-	output reg		  sprcoll,
-	output reg [9:0] sprcoll_ad,
+	output reg		 	sprcoll,
+	output reg [9:0]	sprcoll_ad,
 
-	output [10:0]	sprpx
+	output reg [10:0]	sprpx
 );
 
 wire [8:0] HPOS = PH+15;
@@ -56,10 +56,18 @@ wire [10:0] col1 = { 2'b00, spr_num[4:0], nowflip ? rdat[7:4] : rdat[3:0] };
 wire [10:0] _prevpix;
 reg  [10:0]  prevpix;
 wire side = VPOS[0];
+
+wire [10:0] opix;
+reg   [9:0] rad0,rad1=1;
 LineBuf lbuf(
-	VCLK,   {  side, HPOS }, sprpx,
-	VCLKx4, { ~side, xpos }, wdat, we & (wdat[3:0] != 4'h0), _prevpix
+   VCLKx4, rad0, (rad0==rad1), opix, 
+	VCLKx4, {~side,xpos}, wdat, we & (wdat[3:0] != 4'h0), _prevpix
 );
+always @(posedge VCLK) rad0 <= {side,HPOS};
+always @(negedge VCLK) begin
+	sprpx <= opix;
+	rad1  <= rad0;
+end
 
 assign sprad   = { spr_num, spr_ofs };
 assign sprchad = srcadrs[14:0];

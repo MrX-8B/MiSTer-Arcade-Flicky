@@ -247,8 +247,9 @@ module LineBuf
 (
 	input				clkr,
 	input	  [9:0]	radr,
+	input				clre,
 	output [10:0]	rdat,
-
+	
 	input				clkw,
 	input	  [9:0]	wadr,
 	input	 [10:0]	wdat,
@@ -260,7 +261,7 @@ DPRAM1024_11B core (
 	radr,wadr,
 	clkr,clkw,
 	16'h0,{5'h0,wdat},
-	1'b0,we,
+	clre,we,
 	rdat,rdat1
 );
 
