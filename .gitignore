@@ -6,3 +6,4 @@
 /jtag.cdf
 *.bak
 /*.qws
+greybox_tmp/cbx_args.txt

@@ -387,7 +387,8 @@ assign cpu_cs_sprcoll    = ( cpu_ad[15:10] ==  6'b1111_10 );
 wire   cpu_cs_sprcollclr = ( cpu_ad[15:10] ==  6'b1111_11 );
 assign cpu_cs_vram0		 = ( cpu_ad[15:11] ==  5'b11100   );
 assign cpu_cs_vram1		 = ( cpu_ad[15:11] ==  5'b11101   );
-wire   cpu_cs_scrreg     = ( cpu_ad[15: 0] == 16'b1110_1111_1x11_110x);
+wire   cpu_cs_scrreg     = ((cpu_ad[15: 0] & 16'b1111_1111_1011_1110) == 16'b1110_1111_1011_1100);
+
 
 assign cpu_wr_palram 	 = cpu_cs_palram 		& cpu_wr;
 assign cpu_wr_spram  	 = cpu_cs_spram  		& cpu_wr;

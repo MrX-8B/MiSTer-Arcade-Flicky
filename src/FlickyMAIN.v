@@ -7,7 +7,12 @@ module FlickyMAIN
 
 	input				RESET,
 
-	input  [20:0]	HID,
+	input   [7:0]	INP0,
+	input   [7:0]	INP1,
+	input   [7:0]	INP2,
+
+	input   [7:0]	DSW0,
+	input   [7:0]	DSW1,
 
 	input				VBLK,
 	input				VIDCS,
@@ -55,21 +60,19 @@ assign		CPURD = _cpu_rd & cpu_mreq;
 
 assign		SNDRQ = (CPUAD[4:0] == 5'b1_1000) & cpu_iorq & _cpu_wr;
 
-wire			cpu_cs_port1 = (CPUAD[4:0] == 5'b0_00xx) & cpu_iorq;
-wire			cpu_cs_port2 = (CPUAD[4:0] == 5'b0_01xx) & cpu_iorq;
-wire			cpu_cs_portS = (CPUAD[4:0] == 5'b0_10xx) & cpu_iorq;
-wire			cpu_cs_portA = (CPUAD[4:0] == 5'b0_11x0) & cpu_iorq;
-wire			cpu_cs_portB =((CPUAD[4:0] == 5'b0_11x1) | (CPUAD[4:0] == 5'b1_0000)) & cpu_iorq;
-wire			cpu_cs_portI = (CPUAD[4:0] == 5'b1_10xx) & cpu_iorq;
+wire			cpu_cs_port1 =  (CPUAD[4:2] == 3'b0_00) & cpu_iorq;
+wire			cpu_cs_port2 =  (CPUAD[4:2] == 3'b0_01) & cpu_iorq;
+wire			cpu_cs_portS =  (CPUAD[4:2] == 3'b0_10) & cpu_iorq;
+wire			cpu_cs_portA =  (CPUAD[4:2] == 3'b0_11) & ~CPUAD[0] & cpu_iorq;
+wire			cpu_cs_portB =(((CPUAD[4:2] == 3'b0_11) &  CPUAD[0]) | (CPUAD[4:0] == 5'b1_0000)) & cpu_iorq;
+wire			cpu_cs_portI =  (CPUAD[4:2] == 3'b1_10) & cpu_iorq;
 
-//wire [7:0]	cpu_rd_port1 = {`P1LF,`P1RG,3'b111,`P1TA & `P1TB & `P1TC,2'b11}; 
-//wire [7:0]	cpu_rd_port2 = {`P2LF,`P2RG,3'b111,`P2TA & `P2TB & `P2TC,2'b11}; 
-//wire [7:0]	cpu_rd_portS = {2'b11,`P2ST,`P1ST,3'b111,`COIN}; 
-wire [7:0]	cpu_rd_port1 = 8'hFF;
-wire [7:0]	cpu_rd_port2 = 8'hFF;
-wire [7:0]	cpu_rd_portS = 8'hFF;
-wire [7:0]	cpu_rd_portA = 8'hFF;
-wire [7:0]	cpu_rd_portB = 8'hFF;
+wire [7:0]	cpu_rd_port1 = INP0; 
+wire [7:0]	cpu_rd_port2 = INP1; 
+wire [7:0]	cpu_rd_portS = INP2; 
+
+wire [7:0]	cpu_rd_portA = DSW0;
+wire [7:0]	cpu_rd_portB = DSW1;
 
 wire [7:0]	cpu_rd_mrom;
 wire			cpu_cs_mrom = (CPUAD[15] == 1'b0);

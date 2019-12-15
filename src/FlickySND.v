@@ -156,7 +156,7 @@ endmodule
 
 
 //----------------------------------
-//  Play Request UI
+//  Play Request & IRQ Generator
 //----------------------------------
 module SndPlayReq
 (

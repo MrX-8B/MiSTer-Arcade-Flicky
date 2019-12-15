@@ -8,14 +8,19 @@ module FPGA_FLICKY
 	input				clk48M,
 	input				reset,
 
-	input	  [20:0]	HID,			// Human Interface
+	input   [7:0]	INP0,
+	input   [7:0]	INP1,
+	input   [7:0]	INP2,
 
+	input   [7:0]	DSW0,
+	input   [7:0]	DSW1,
+	
 	input   [8:0]  PH,         // PIXEL H
 	input   [8:0]  PV,         // PIXEL V
 	output         PCLK,       // PIXEL CLOCK (to VGA encoder)
 	output  [7:0]	POUT, 	   // PIXEL OUT
 
-	output  [15:0] SND			// SoundOut (PCM)
+	output  [15:0] SOUT			// Sound Out (PCM)
 );
 
 // Clocks
@@ -30,7 +35,9 @@ wire			CPUWR,VIDCS,VBLK;
 wire			SNDRQ;
 
 FlickyMAIN Main (
-	.RESET(reset),.HID(HID),
+	.RESET(reset),
+	.INP0(INP0),.INP1(INP1),.INP2(INP2),
+	.DSW0(DSW0),.DSW1(DSW1),
 	.CLK48M(clk48M),.CLK3M(clk3M),
 	.CPUCLn(CPUCLn),.CPUAD(CPUAD),.CPUDO(CPUDO),.CPUWR(CPUWR),
 	.VBLK(VBLK),.VIDCS(VIDCS),.VIDDO(VIDDO),
@@ -48,7 +55,7 @@ FlickyVIDEO Video (
 assign PCLK = clk6M;
 
 // Sound
-FlickySND Sound(clk8M, reset, CPUDO, SNDRQ, SND);
+FlickySND Sound(clk8M, reset, CPUDO, SNDRQ, SOUT);
 
 endmodule
 
