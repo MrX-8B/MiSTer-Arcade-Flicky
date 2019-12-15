@@ -77,10 +77,18 @@ localparam CONF_STR = {
 	"O1,Aspect Ratio,Original,Wide;",
 	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"-;",
+	"O89,Lives,3,4,5,Infinite;",
+	"OAB,Extend,30k/80k/160k,30k/100k/200k,40k/120k/240k,40k/140k/280k;",
+	"OC,Difficulty,Easy,Hard;",
+	"-;",
 	"R0,Reset;",
 	"J1,Jump,Start 1P,Start 2P,Coin;",
 	"V,v",`BUILD_DATE
 };
+
+wire [1:0] dsLives  = ~status[9:8];
+wire [1:0] dsExtend = ~status[11:10]; 
+wire       dsDifclt = ~status[12]; 
 
 wire bCabinet = 1'b0;
 
@@ -261,12 +269,12 @@ assign AUDIO_S = 0; // unsigned PCM
 
 wire iRST = RESET | status[0] | buttons[1] | ioctl_download;
 
-wire [7:0] INP0 = ~{m_left1,m_right1,3'b000,m_trig11,2'b00}; 
-wire [7:0] INP1 = ~{m_left2,m_right2,3'b000,m_trig21,2'b00}; 
-wire [7:0] INP2 = ~{2'b00,m_start2,m_start1,3'b000,m_coin}; 
+wire [7:0] INP0 = ~{m_left1,m_right1,3'd0,m_trig11,2'd0}; 
+wire [7:0] INP1 = ~{m_left2,m_right2,3'd0,m_trig21,2'd0}; 
+wire [7:0] INP2 = ~{2'd0,m_start2,m_start1,3'd0, m_coin}; 
 
 wire [7:0] DSW0 = 8'hFF;
-wire [7:0] DSW1 = 8'hFF;
+wire [7:0] DSW1 = {dsDifclt,dsExtend,dsLives,1'b0,bCabinet};
 
 FPGA_FLICKY GameCore ( 
 	.clk48M(clk_48M),.reset(iRST),
