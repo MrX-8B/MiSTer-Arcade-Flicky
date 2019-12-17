@@ -11,7 +11,7 @@ module FlickySPRITE
 	output 	[9:0]		sprad,
 	input   [15:0]		sprdt,
 
-	output  [14:0]		sprchad,
+	output  [17:0]		sprchad,
 	input    [7:0]		sprchdt,
 
 	output reg		 	sprcoll,
@@ -70,7 +70,7 @@ always @(negedge VCLK) begin
 end
 
 assign sprad   = { spr_num, spr_ofs };
-assign sprchad = srcadrs[14:0];
+assign sprchad = { bank, srcadrs[14:0] };
 
 wire [9:0] sprcoll_adr = { spr_num[4:0], prevpix[8:4] };
 
@@ -106,12 +106,12 @@ always @ ( negedge VCLKx4 ) begin
 						hitsprvps[hits] <= (svpos-sprdt[7:0])+1;
 						hits <= hits+1;
 					end	
-				end	
+				end
 				phaseHB <= ( spr_num == `SPEND ) ? 2'h2 : 2'h1;
 				spr_num <= spr_num+1;
 			end
 
-			default: begin end
+			default:;
 
 		endcase 
 
@@ -142,7 +142,7 @@ always @ ( negedge VCLKx4 ) begin
 			// get yofs/xpos/bank
 			2: begin
 				yofs <= hitsprvps[hitr];
-				xpos <= sprdt[8:1]+13;
+				xpos <= sprdt[8:1]+14;
 				bank <= { sprdt[13], sprdt[14], sprdt[15] };
 				spr_ofs <= 2;
 				phaseHD <= 3;
@@ -157,7 +157,7 @@ always @ ( negedge VCLKx4 ) begin
 
 			// get srcadrs & calc chiprom address
 			4: begin
-				srcadrs <= srca; //|{ bank, 15'h0 };
+				srcadrs <= srca;
 				hflip   <= srca[15];
 				waitcnt <= 3;
 				phaseHD <= 5;
@@ -181,7 +181,6 @@ always @ ( negedge VCLKx4 ) begin
 			7: begin
 				prevpix <= _prevpix;
 				if ( col0[3:0] != 4'hF ) begin
-					xpos <= xpos+1;
 					wdat <= col0;
 					we   <= 1'b1;
 					phaseHD <= 8;
@@ -200,13 +199,13 @@ always @ ( negedge VCLKx4 ) begin
 						sprcoll_ad <= sprcoll_adr;
 					end
 				end
+				xpos <= xpos+1;
 				phaseHD <= 9;
 			end
 			9: begin
 				prevpix <= _prevpix;
 				sprcoll <= 1'b0;
 				if ( col1[3:0] != 4'hF ) begin
-					xpos <= xpos+1;
 					wdat <= col1;
 					we   <= 1'b1;
 					phaseHD <= 10;
@@ -225,6 +224,7 @@ always @ ( negedge VCLKx4 ) begin
 						sprcoll_ad <= sprcoll_adr;
 					end
 				end
+				xpos <= xpos+1;
 				phaseHD <= 6;
 			end
 
