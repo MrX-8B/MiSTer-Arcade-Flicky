@@ -1,3 +1,5 @@
+(This core is obsolete.　Integrated into SEGA SYSTEM 1 core.)
+
 ---------------------------------------------------------------------------------
 -- 
 -- Arcade: Flicky  port to MiSTer by MiSTer-X
